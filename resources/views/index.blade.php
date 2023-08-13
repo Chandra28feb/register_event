@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>Index</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -25,7 +26,8 @@
         {{ session('message') }}
     </div>
 @endif
-        <form action="{{ route('register.store') }}" method="post">
+<div id="validationMessage" class="alert alert-danger d-none"></div>
+        <form action="{{ route('register.store') }}" method="post" id="event_form">
             @csrf
         <div class="row" style="background-color: aquamarine;padding: 10px;">
             <div class="col-md-3">Event</div>
@@ -163,6 +165,42 @@ function calculation(selected_item_input,total_amount_input){
     $('#total_selected_item_input').val(selected_item_input);
     $('#total_amount_input').val(total_amount_input);
 }
+$(document).on('submit','#event_form',function(event){
+    event.preventDefault();
+    var total_selected_item_input = $('#total_selected_item_input').val();
+    var total_amount_input = $('#total_amount_input').val();
+    var formData = new FormData(this);
+    $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url:"{{ route('register.store') }}",
+            type:"POST",
+            processData: false,
+            contentType: false,
+            cache: false,
+            data:formData,
+            success:function(response){
+                $('#validationMessage').removeClass('d-none');
+                $('#validationMessage').removeClass('alert-danger');
+                $('#validationMessage').addClass('alert-success');
+                $('#validationMessage').text(response.message);
+                setTimeout(() => {
+                        $('#validationMessage').addClass('d-none');
+                        $('#validationMessage').addClass('alert-danger');
+                    }, 5000);
+            },
+            error: function(xhr, status, error) {
+                    var errors = xhr.responseJSON.errors;
+                    var errorMessage = errors.total_selected_item_input[0];
+                    $('#validationMessage').removeClass('d-none');
+                    $('#validationMessage').text(errorMessage);
+                    setTimeout(() => {
+                        $('#validationMessage').addClass('d-none');
+                    }, 5000);
+        }
+    });
+});
 </script>
 </body>
 </html>

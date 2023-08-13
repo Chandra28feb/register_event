@@ -6,6 +6,7 @@ use Throwable;
 use App\Models\Event;
 use App\Models\Register;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\RegisterEventStoreRequest;
 
 class RegisterEventController extends Controller
@@ -25,10 +26,11 @@ class RegisterEventController extends Controller
             Event::create($eventData);
         }
 
-        return redirect()->back()->with(['status'=>'success','message'=>'Event Created']);
+        return response()->json(['status'=>'success','message'=>'Event Created']);
         }
         catch (Throwable $th) {
-            return redirect()->back()->with(['status'=>'danger','message'=>$th->getMessage()]);
+            Log::error($th->getMessage());
+            return response()->json(['status'=>'danger','message'=>$th->getMessage()]);
         }
 
     }
