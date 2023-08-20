@@ -2,31 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>Index</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    @include('layout.header')
 </head>
 <body>
     <div class="container text-center">
-        @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-@if(session('status'))
-    <div class="alert alert-{{ session('status') }}">
-        {{ session('message') }}
-    </div>
-@endif
-<div id="validationMessage" class="alert alert-danger d-none"></div>
+    @include('layout.navbar')
+    <div class="mt-5">
+        @if (session('message'))
+        <div class="alert alert-{{ session('status') }}">
+            {{ session('message') }}
+        </div>
+        @endif
+        <div id="validationMessage" class="alert alert-danger d-none "></div>
         <form action="{{ route('register.store') }}" method="post" id="event_form">
             @csrf
         <div class="row" style="background-color: aquamarine;padding: 10px;">
@@ -109,6 +100,7 @@
         <button type="submit"  class="btn btn-success mt-5">Register</button>
     </form>
     </div>
+</div>
 <script>
 $(document).ready(function() {
 $(document).on('click','.add',function(){
